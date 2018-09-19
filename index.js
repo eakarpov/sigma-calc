@@ -52,6 +52,8 @@ function findIndex(ctx, name) {
 
 function d(ctx, body) {
     if (!body.methodCall) {
+        if (body.ctx instanceof Int) return body.ctx;
+        if (body.ctx instanceof Float) return body.ctx;
         return findVariable(ctx, body.ctx);
     } else {
         return evalMethodCall(ctx, body.methodCall);
@@ -92,11 +94,18 @@ function validateType(type, args) {
     }
 }
 
-function substitute(ctx, name, newValue) {
-    const index = findIndex(ctx, name);
-    ctx.properties.splice(index, 1);
-    ctx.properties.push(newValue);
-    return ctx;
+function substitute(outer, ctx, name, newValue) {
+    if (outer) {
+        const index = findIndex(outer[ctx], name);
+        outer[ctx].properties.splice(index, 1);
+        outer[ctx].properties.push(newValue);
+        return outer;
+    } else {
+        const index = findIndex(ctx[ctx._ctx], name);
+        ctx[ctx._ctx].properties.splice(index, 1);
+        ctx[ctx._ctx].properties.push(newValue);
+        return ctx;
+    }
 }
 
 function getCtx(ctx, method) {
@@ -124,6 +133,16 @@ function clone(obj) {
     }
 }
 
+function addMethod(outer, ctx, name, newValue) {
+    if (outer) {
+        outer[ctx].properties.push(newValue);
+        return outer;
+    } else {
+        ctx[ctx._ctx].properties.push(newValue);
+        return ctx;
+    }
+}
+
 function evalExprBody(ctx, method, args) {
     if (method instanceof Int) return method.body.value;
     if (method instanceof Float) return method.body.value;
@@ -133,11 +152,16 @@ function evalExprBody(ctx, method, args) {
         const newMethod = clone(method);
         const body = c(newMethod, b(a(clone(ctx), newMethod)));
         const mtd = findMethodByName(ctx, method.method);
-        if (!mtd) throw new Error(`Method ${method.method} not found error`);
-        validateType([...mtd.type.args].slice(0, mtd.type.args.length - 1), method.type.args);
-        const field = new Field(method.method, method.type, body);
-        validateType([mtd.type.args[mtd.type.args.length - 1]], [method.type.args[method.type.args.length - 1]]);
-        return substitute(context, method.method, field);
+        // if (!mtd) throw new Error(`Method ${method.method} not found error`);
+        if (mtd) {
+            validateType([...mtd.type.args].slice(0, mtd.type.args.length - 1), method.type.args);
+            const field = new Field(method.method, method.type, body);
+            validateType([mtd.type.args[mtd.type.args.length - 1]], [method.type.args[method.type.args.length - 1]]);
+            return substitute(method.ctx && ctx, method.ctx || context, method.method, field);
+        } else {
+            const field = new Field(method.method, method.type, body);
+            return addMethod(method.ctx && ctx, method.ctx || context, method.method, field);
+        }
     }
     if (method instanceof MethodUpdate) {
         const context = getCtx(ctx, method);
@@ -147,11 +171,16 @@ function evalExprBody(ctx, method, args) {
         const bodyB = lazy(() => c(newMethod, b(a(clone(ctx), newMethod))));
         const body = typeof method.ctx === 'string' ? bodyB() : bodyB;
         const mtd = findMethodByName(ctx, method.method);
-        if (!mtd) throw new Error(`Method ${method.method} not found error`);
-        validateType([...mtd.type.args].slice(0, mtd.type.args.length - 1), method.type.args);
-        const method2 = new Method(method.method, method.type, (method.ctx === null || method.ctx === method._ctx) ? method.ctx : newContext, body);
-        validateType([mtd.type.args[mtd.type.args.length - 1]], [method.type.args[method.type.args.length - 1]]);
-        return substitute(context, method.method, method2);
+        // if (!mtd) throw new Error(`Method ${method.method} not found error`);
+        if (mtd) {
+            validateType([...mtd.type.args].slice(0, mtd.type.args.length - 1), method.type.args);
+            const method2 = new Method(method.method, method.type, (method.ctx === null || method.ctx === method._ctx) ? method.ctx : newContext, body);
+            validateType([mtd.type.args[mtd.type.args.length - 1]], [method.type.args[method.type.args.length - 1]]);
+            return substitute(method.ctx && ctx, method.ctx || context, method.method, method2);
+        } else {
+            const method2 = new Method(method.method, method.type, (method.ctx === null || method.ctx === method._ctx) ? method.ctx : newContext, body);
+            return addMethod(method.ctx && ctx, method.ctx || context, method.method, method2);
+        }
     }
     if (method instanceof MethodCall) {
         return evalMethodCall(ctx, method);
@@ -185,7 +214,10 @@ function evalBodyParse(ctx, method, args) {
     if (typeof method === 'string') return method;
     if (method instanceof ObjectType) {
         const prop = Array.isArray(method.properties) &&  method.properties[0];
-        return { [prop.ctx]: method };
+        if (ctx[prop.ctx]) {
+            ctx[prop.ctx] = setCtx(ctx[prop.ctx], method);
+        }
+        return ctx;
     }
     if (method instanceof Lambda) {
         if (args) {
@@ -200,7 +232,7 @@ function evalBodyParse(ctx, method, args) {
     }
     if (method instanceof Function) {
         return evalFunction(ctx, method);
-    }evalMethodCall
+    }
     if (typeof method === 'function') {
         return evalBodyParse(ctx, method(), args);
     }
@@ -236,6 +268,7 @@ function evalMethodCall(ctx, mtd) {
         validateArgs([...type].slice(0, type.length - 1), mtd);
         const context = method.ctx ? typeof method.ctx === 'string' ? ctx[method.ctx] ? ctx : { [method.ctx]: ctx } : method.ctx : ctx;
         // const context = method.ctx ? typeof method.ctx === 'string' ? ctx : method.ctx : ctx;
+        context._ctx = method.ctx || context._ctx;
         const result = evalBodyParse(context, method.body, mtd.args);
         const outputType = type[type.length - 1];
         validateArgs([outputType], { name: mtd.name, args: [result] });
@@ -293,7 +326,7 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-console.log(evalMain(sigma));
-console.log(evalMain(sigma2));
-console.log(evalMain(sigma3));
-// console.log(evalMain(sigma4));
+// console.log(evalMain(sigma));
+// console.log(evalMain(sigma2));
+// console.log(evalMain(sigma3));
+console.log(evalMain(sigma4));

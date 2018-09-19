@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2eb8b087-09ca-47e7-adf0-4eb955629194" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../index.js" afterDir="false" />
     </list>
@@ -53,32 +52,32 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="js" value="68" />
+          <entry key="js" value="444" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JavaScript" value="68" />
+          <entry key="JavaScript" value="444" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="257" column="4" selection-start-line="257" selection-start-column="4" selection-end-line="257" selection-end-column="4" />
+            <state relative-caret-position="-1001">
+              <caret line="191" column="41" lean-forward="true" selection-start-line="191" selection-start-column="41" selection-end-line="191" selection-end-column="41" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../objects.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="195" column="14" selection-start-line="195" selection-start-column="14" selection-end-line="195" selection-end-column="14" />
+            <state relative-caret-position="194">
+              <caret line="197" column="19" lean-forward="true" selection-start-line="197" selection-start-column="19" selection-end-line="197" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -86,7 +85,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../types.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="885">
+            <state relative-caret-position="39">
               <caret line="59" column="21" selection-start-line="59" selection-start-column="17" selection-end-line="59" selection-end-column="21" />
             </state>
           </provider>
@@ -185,12 +184,12 @@
       <option name="presentableId" value="Default" />
       <updated>1537341202159</updated>
       <workItem from="1537341205483" duration="6691000" />
-      <workItem from="1537368711586" duration="1783000" />
+      <workItem from="1537368711586" duration="6585000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8474000" />
+    <option name="totallyTimeSpent" value="13276000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
@@ -202,7 +201,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32972974" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.5556757" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.53945947" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -226,21 +225,38 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/../../index.js</url>
-          <line>149</line>
+          <line>172</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="18" />
+          <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/../../index.js</url>
-          <line>257</line>
+          <line>40</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="19" />
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/../../index.js</url>
+          <line>267</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/../../index.js</url>
+          <line>185</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>outer[ctx]</expression-string>
+        <language-id>JavaScript</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>ctx[ctxEl] instanceof ObjectType</expression-string>
         <language-id>JavaScript</language-id>
@@ -261,22 +277,22 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../../types.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="885">
+        <state relative-caret-position="39">
           <caret line="59" column="21" selection-start-line="59" selection-start-column="17" selection-end-line="59" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../objects.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="195" column="14" selection-start-line="195" selection-start-column="14" selection-end-line="195" selection-end-column="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="257" column="4" selection-start-line="257" selection-start-column="4" selection-end-line="257" selection-end-column="4" />
+        <state relative-caret-position="-1001">
+          <caret line="191" column="41" lean-forward="true" selection-start-line="191" selection-start-column="41" selection-end-line="191" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../objects.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="197" column="19" lean-forward="true" selection-start-line="197" selection-start-column="19" selection-end-line="197" selection-end-column="19" />
         </state>
       </provider>
     </entry>
