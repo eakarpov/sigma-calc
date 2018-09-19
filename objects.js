@@ -31,6 +31,7 @@ const sigma = new Sigma(
         new MethodCall(null, 'move', [new Int(5)]),
         new MethodCall(null, 'move', [new Int(6)]),
         new MethodCall(null, 'move', [new Int(-4)]),
+        new MethodCall(null, "move", [new Int(-13)]),
         new MethodCall(null, 'x')
 ]);
 
@@ -60,7 +61,7 @@ const sigma2 = new Sigma(
                 null,
                 [new FieldUpdate('this', 'acc', new Type('Real'), new Expression(
                     null,
-                    new MethodCall('this', 'equals')
+                    [new MethodCall('this', 'equals')]
                 ))]
             ),
             [new MethodUpdate(null, 'equals', new Type('Real'), 'self', new Expression(
@@ -77,7 +78,7 @@ const sigma2 = new Sigma(
                 null,
                 [new FieldUpdate('this', 'acc', new Type('Real'), new Expression(
                     null,
-                    new MethodCall('this', 'equals')
+                    [new MethodCall('this', 'equals')]
                 ))]
             ),
             [new MethodUpdate(null, 'equals', new Type('Real'), 'self', new Expression(
@@ -98,6 +99,8 @@ const sigma2 = new Sigma(
         new MethodCall(null, 'add'),
             // new MethodCall(null, 'add'),
         new MethodCall(null, 'enter', [new Float(3.0)]),
+        new MethodCall(null, 'sub'),
+        new MethodCall(null, 'enter', [new Float(-2.2)]),
         new MethodCall(null, 'equals')
     ]
 );
@@ -182,11 +185,11 @@ const sigma3 = new Sigma(
 //   ]), new Expression(null, new MethodCall(null, 'prog'))
 // );
 
-const sigmac4 = new Sigma(
+const sigma4 = new Sigma(
   new ObjectType(
       [
           new Method('zero', new Type('Obj'), 'global', new ObjectType([
-              'succ', new Type('Obj'), 'this', new Expression(new Expression(new Expression(null, [
+              new Method('succ', new Type('Obj'), 'this', new Expression(new Expression(new Expression(null, [
                   new FieldUpdate('this', 'ifzero', new Type('Obj'), new Expression(null, [
                       new MethodCall('global', 'false')
                   ]))
@@ -196,7 +199,7 @@ const sigmac4 = new Sigma(
                   new FieldUpdate(null, 'num', new Type('Int'), new Expression(null, [
                       new Function(new Parameter('this', new MethodCall(null, 'num')), '+', new Parameter(new Int(1)))
                   ]))
-              ])
+              ]))
           ])),
           new Field('ifzero', new Type('Obj'), new Expression(null, [
               new MethodCall('global', 'true')
@@ -237,5 +240,6 @@ const sigmac4 = new Sigma(
 module.exports = {
     sigma,
     sigma2,
-    sigma3
+    sigma3,
+    sigma4
 };
