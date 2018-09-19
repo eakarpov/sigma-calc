@@ -260,6 +260,9 @@ function setCtx(...contexts) {
         // if (el instanceof ObjectType) {
         //     el.__proto__ = ObjectType;
         // }
+        if (el instanceof ObjectType) {
+            context = new ObjectType();
+        }
         for (const key of Object.keys(el)) {
             if (el[key] instanceof ObjectType) {
                 context[key] = new ObjectType();
@@ -267,7 +270,6 @@ function setCtx(...contexts) {
             context[key] = el[key];
         }
     }
-    console.log(context);
     return context;
 }
 
@@ -291,7 +293,7 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-// console.log(evalMain(sigma));
+console.log(evalMain(sigma));
 console.log(evalMain(sigma2));
-// console.log(evalMain(sigma3));
+console.log(evalMain(sigma3));
 // console.log(evalMain(sigma4));
