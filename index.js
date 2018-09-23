@@ -14,6 +14,9 @@ function findMethodByName(ctx, name) {
                 }
             } else {
                 for (const key of Object.keys(ctx[ctxEl])) {
+                    if (ctx[ctxEl][key] instanceof ObjectType) {
+                        return findMethodByName(ctx[ctxEl][key], name);
+                    }
                     if (key === name) return ctx[ctxEl][key];
                 }
             }
@@ -56,7 +59,12 @@ function d(ctx, body) {
         if (body.ctx instanceof Float) return body.ctx;
         return findVariable(ctx, body.ctx);
     } else {
-        return evalMethodCall(ctx, body.methodCall);
+        ctx._ctx = body.ctx;
+        if (Array.isArray(body.methodCall)) {
+            return evalExprArr({ args: body.methodCall, context: ctx });
+        } else {
+            return evalMethodCall(ctx, body.methodCall);
+        }
     }
 }
 
@@ -224,7 +232,16 @@ function evalBodyParse(ctx, method, args) {
     if (method instanceof Lambda) {
         if (args) {
             const argObj = {};
-            method.args.forEach((e, i) => argObj[e.name] = args[i]);
+            method.args.forEach((e, i) => {
+                let res = void 0;
+                if (args[i] instanceof Parameter) {
+                    res = evalExprBody(ctx, args[i], args);
+                    res = res[res._ctx];
+                } else {
+                    res = args[i];
+                }
+                argObj[e.name] = res;
+            });
             return evalBodyParse({...ctx, _args: argObj }, method.body);
         }
 
@@ -328,8 +345,8 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-// console.log(evalMain(sigma));
-// console.log(evalMain(sigma2));
-// console.log(evalMain(sigma3));
-// console.log(evalMain(sigma4));
+console.log(evalMain(sigma));
+console.log(evalMain(sigma2));
+console.log(evalMain(sigma3));
+console.log(evalMain(sigma4));
 console.log(evalMain(sigma5));

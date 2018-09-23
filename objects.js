@@ -241,12 +241,13 @@ const sigma5 = new Sigma(new ObjectType([
     new Method('numeral', new Type('Obj'), 'top', new ObjectType([
         new Method('zero', new Type('Obj'), 'numeral', new ObjectType([
            new Method('case', new Type('Obj', 'Obj', 'Obj'), 'zero',
-               new Lambda([new LambdaArg('z', new Type('Obj'))], [new LambdaArg('s', new Type('Obj'))], new Expression(null,
+               new Lambda([new LambdaArg('z', new Type('Obj')), new LambdaArg('s', new Type('Obj'))], new Expression(null,
                    [
                        new Parameter('z')
                    ]))),
             new Method('succ', new Type('Obj'), 'zero', new Expression(new Expression(null, [
-                new MethodUpdate('zero', 'case', new Type('Obj', 'Obj', 'Obj'), 'tt', new Lambda([new LambdaArg('z', new Type('Obj')), new LambdaArg('s', new Type('Obj'))],
+                new MethodUpdate('zero', 'case', new Type('Obj', 'Obj', 'Obj'), 'tt',
+                    new Lambda([new LambdaArg('z', new Type('Obj')), new LambdaArg('s', new Type('Obj'))],
                     new Expression(null, [new MethodCall('s', 'zero')])))
             ]), [
                 new FieldUpdate(null, 'val', new Type('Int'), new Expression(null, [
