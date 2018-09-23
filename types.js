@@ -16,6 +16,11 @@ function Lambda(args, body) {
     this.body = body;
 }
 
+function LambdaArg(name, type) {
+    this.name = name;
+    this.type = type;
+}
+
 function FieldUpdate(ctx, method, type, content) {
     this.ctx = ctx;
     this.method = method;
@@ -101,4 +106,5 @@ module.exports = {
   Lambda,
   Function,
   Parameter,
+    LambdaArg,
 };

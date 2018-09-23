@@ -1,4 +1,4 @@
-const {Sigma, Expression, Field, FieldUpdate, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} = require('./types');
+const {Sigma, Expression, Field, FieldUpdate, LambdaArg, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} = require('./types');
 
 const sigma = new Sigma(
     new ObjectType([
@@ -8,7 +8,7 @@ const sigma = new Sigma(
             new Type('Int','Obj'),
             'this',
             new Lambda(
-                ['dx'],
+                [new LambdaArg('dx', new Type('Int'))],
                 new Expression(
                     null,
                     [new FieldUpdate(
@@ -52,7 +52,7 @@ const sigma2 = new Sigma(
                 [new MethodCall('self', 'arg')]
             ))]
         )),
-        new Method('enter', new Type('Real', 'Obj'), 'this', new Lambda(['n'], new Expression(
+        new Method('enter', new Type('Real', 'Obj'), 'this', new Lambda([new LambdaArg('n', new Type('float'))], new Expression(
             null,
             [new FieldUpdate('this', 'arg', new Type('Real'), new Parameter('n'))]
         ))),
@@ -238,13 +238,94 @@ const sigma4 = new Sigma(
 );
 
 const sigma5 = new Sigma(new ObjectType([
+    new Method('numeral', new Type('Obj'), 'top', new ObjectType([
+        new Method('zero', new Type('Obj'), 'numeral', new ObjectType([
+           new Method('case', new Type('Obj', 'Obj', 'Obj'), 'zero',
+               new Lambda([new LambdaArg('z', new Type('Obj'))], [new LambdaArg('s', new Type('Obj'))], new Expression(null,
+                   [
+                       new Parameter('z')
+                   ]))),
+            new Method('succ', new Type('Obj'), 'zero', new Expression(new Expression(null, [
+                new MethodUpdate('zero', 'case', new Type('Obj', 'Obj', 'Obj'), 'tt', new Lambda([new LambdaArg('z', new Type('Obj')), new LambdaArg('s', new Type('Obj'))],
+                    new Expression(null, [new MethodCall('s', 'zero')])))
+            ]), [
+                new FieldUpdate(null, 'val', new Type('Int'), new Expression(null, [
+                    new Function(new Parameter('zero', new MethodCall(null, 'val')), '+', new Parameter(new Int(1)))
+                ]))
+            ])),
+            new Field('val', new Type('Int'), new Expression(null, [
+                new Parameter(new Int(0))
+            ])),
+            new Method('pred', new Type('Obj'), 'this', new Expression(null, [
+                new MethodCall('this', 'case', [
+                    new Parameter('numeral', new MethodCall(null, 'zero')),
+                    new Lambda([new LambdaArg('x', new Type('Obj', 'Obj'))], new Expression(null, [
+                        new Parameter('x')
+                    ]))
+                ])
+            ])),
+            new Method('add', new Type('Obj', 'Int'), 'this', new Lambda([
+                new LambdaArg('that', new Type('Obj'))
+            ], new Expression(null, [
+                new MethodCall('this', 'case', [
+                    new Parameter('that'),
+                    new Lambda([new LambdaArg('x', new Type('Obj'))], new Expression(null, [
+                        new MethodCall('x', 'add', [
+                            new Parameter('that', new MethodCall(null, 'succ'))
+                        ])
+                    ]))
+                ])
+            ])))
+        ])),
+        new Method('fib', new Type('Obj'), 'numeral', new Lambda([new LambdaArg('n', new Type('Obj'))], new Expression(null, [
+            new MethodCall('n', 'case', [ new Parameter('numeral', new MethodCall(null, 'zero')), new Lambda([new LambdaArg('x', new Type('Obj'))], new Expression(null, [
+                new MethodCall('x', 'case', [ new Parameter('n')], [new Lambda([ new LambdaArg('y', new Type('Obj'))], new Expression(new Expression(
+                    null,
+                    [
+                        new MethodCall('numeral', 'fib', [new Parameter('x')], [new MethodCall(null, 'add', [new Parameter('numeral', new MethodCall(null, 'fib', [
+                            new Parameter('y')
+                        ]))])])
+                    ]
+                )))])
+            ]))])
+        ]))),
+    ])),
+    new Method('main', new Type('Int'), 'top', new Expression(new Expression(null, [
+        new MethodCall('top', 'numeral')
+    ]), [
+        new MethodCall(null, 'fib', [ new Parameter('top', [
+            new MethodCall(null, 'numeral'),
+            new MethodCall(null, 'zero'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
 
+        ])]),
+        new MethodCall(null, 'val')
+    ]))
 ]), [
-
+    new MethodCall(null, 'main')
 ]);
 
-// Sigma(ObjectType(ArrayBuffer(Method(numeral,Type(ArrayBuffer(Obj)),top,Inr(Inl(ObjectType(ArrayBuffer(Method(zero,Type(ArrayBuffer(Obj)),numeral,Inr(Inl(ObjectType(ArrayBuffer(Method(case,Type(ArrayBuffer(Obj, Obj, Obj)),zero,Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(z,Type(ArrayBuffer(Obj)))), ArrayBuffer(LambdaArg(s,Type(ArrayBuffer(Obj))))),Expression(None,ArrayBuffer(Inr(Inr(Inr(Inl(Parameter(Inr(Inl(z)),None)))))))))), Method(succ,Type(ArrayBuffer(Obj)),zero,Inr(Inr(Inl(Expression(Some(Expression(None,ArrayBuffer(Inr(Inl(MethodUpdate(Some(zero),case,Type(ArrayBuffer(Obj, Obj, Obj)),tt,Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(z,Type(ArrayBuffer(Obj)))), ArrayBuffer(LambdaArg(s,Type(ArrayBuffer(Obj))))),Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(s),zero,ArrayBuffer())))))))))))))))),ArrayBuffer(Inl(FieldUpdate(None,val,Type(ArrayBuffer(Int)),Inl(Inr(Inr(Inl(Expression(None,ArrayBuffer(Inr(Inr(Inl(Function(Parameter(Inr(Inl(zero)),Some(Call(None,val,ArrayBuffer()))),+,Parameter(Inl(IntValue(1)),None))))))))))))))))))), Field(val,Type(ArrayBuffer(Int)),Inl(Inr(Inr(Inl(Expression(None,ArrayBuffer(Inr(Inr(Inr(Inl(Parameter(Inl(IntValue(0)),None)))))))))))), Method(pred,Type(ArrayBuffer(Obj)),this,Inr(Inr(Inl(Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(this),case,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(numeral,ArrayBuffer(Inl(Call(None,zero,ArrayBuffer())))))))), ArrayBuffer(Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(x,Type(ArrayBuffer(Obj, Obj))))),Expression(None,ArrayBuffer(Inr(Inr(Inr(Inl(Parameter(Inr(Inl(x)),None))))))))))))))))))))))), Method(add,Type(ArrayBuffer(Obj, Int)),this,Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(that,Type(ArrayBuffer(Obj))))),Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(this),case,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(that,ArrayBuffer()))))), ArrayBuffer(Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(x,Type(ArrayBuffer(Obj))))),Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(x),add,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(that,ArrayBuffer(Inl(Call(None,succ,ArrayBuffer()))))))))))))))))))))))))))))))))))))), Method(fib,Type(ArrayBuffer(Obj)),numeral,Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(n,Type(ArrayBuffer(Obj))))),Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(n),case,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(numeral,ArrayBuffer(Inl(Call(None,zero,ArrayBuffer())))))))), ArrayBuffer(Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(x,Type(ArrayBuffer(Obj))))),Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(x),case,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(n,ArrayBuffer()))))), ArrayBuffer(Inl(Lambda(ArrayBuffer(ArrayBuffer(LambdaArg(y,Type(ArrayBuffer(Obj))))),Expression(Some(Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(numeral),fib,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(x,ArrayBuffer()))))))))))))))),ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(None,add,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(numeral,ArrayBuffer(Inl(Call(None,fib,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(y,ArrayBuffer()))))))))))))))))))))))))))))))))))))))))))))))))))))))), Method(main,Type(ArrayBuffer(Int)),top,Inr(Inr(Inl(Expression(Some(Expression(None,ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(Some(top),numeral,ArrayBuffer())))))), Inr(Inr(Inr(Inr(Inl(Call(None,fib,ArrayBuffer(ArrayBuffer(Inr(Inr(Inl(StringWithCutExpr(top,ArrayBuffer(Inl(Call(None,numeral,ArrayBuffer())), Inl(Call(None,zero,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())), Inl(Call(None,succ,ArrayBuffer())))))))))))))))))),ArrayBuffer(Inr(Inr(Inr(Inr(Inl(Call(None,val,ArrayBuffer())))))))))))))),Inl(Call(None,main,ArrayBuffer())))
-
+// [
+//     numeral: Obj = @top => [
+//         zero: Obj = @numeral => [case: Obj -> Obj -> Obj = @zero => \(z: Obj) => \(s: Obj) => z, succ: Obj = @zero => (zero.case: Obj -> Obj -> Obj <= @tt => \(z: Obj) => \(s: Obj) => s.zero).val: Int := zero.val + 1, val: Int := 0, pred: Obj = @this => this.case(numeral.zero)(\(x: Obj -> Obj) => x), add: Obj -> Int = @this => \(that: Obj) => this.case(that)(\(x: Obj) => x.add(that.succ))],
+//         fib: Obj = @ numeral => \(n: Obj) => n.case(numeral.zero)(\(x: Obj) => x.case(n)(\(y: Obj) => (numeral.fib(x)).add(numeral.fib(y))))
+//     ],
+//     main: Int = @ top => (top.numeral.fib(top.numeral.zero.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ)).val
+// ].main
 
 module.exports = {
     sigma,

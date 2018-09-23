@@ -1,5 +1,5 @@
 const {Sigma, Expression, Field, FieldUpdate, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} = require('./types');
-const {sigma, sigma2, sigma3, sigma4 } = require('./objects');
+const {sigma, sigma2, sigma3, sigma4, sigma5} = require('./objects');
 
 function findMethodByName(ctx, name) {
     if (ctx instanceof ObjectType) {
@@ -224,7 +224,7 @@ function evalBodyParse(ctx, method, args) {
     if (method instanceof Lambda) {
         if (args) {
             const argObj = {};
-            method.args.forEach((e, i) => argObj[e] = args[i]);
+            method.args.forEach((e, i) => argObj[e.name] = args[i]);
             return evalBodyParse({...ctx, _args: argObj }, method.body);
         }
 
@@ -332,3 +332,4 @@ function evalMain(sigma, i = 0, newContext) {
 // console.log(evalMain(sigma2));
 // console.log(evalMain(sigma3));
 // console.log(evalMain(sigma4));
+console.log(evalMain(sigma5));
