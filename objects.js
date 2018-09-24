@@ -240,16 +240,18 @@ const sigma4 = new Sigma(
 const sigma5 = new Sigma(new ObjectType([
     new Method('numeral', new Type('Obj'), 'top', new ObjectType([
         new Method('zero', new Type('Obj'), 'numeral', new ObjectType([
-            new Method('case', new Type('Obj', 'Obj', 'Obj'), 'zero',
+            new Method('case', new Type('Obj', 'Obj', 'Obj'), 'this',
                 new Lambda([new LambdaArg('z', new Type('Obj')), new LambdaArg('s', new Type('Obj'))],
                     new Expression(null, [new Parameter('z')]))),
-            new Method('succ', new Type('Obj'), 'zero', new Expression(new Expression(null, [
-                new MethodUpdate('zero', 'case', new Type('Obj', 'Obj', 'Obj'), 'tt',
+            new Method('succ', new Type('Obj'), 'this', new Expression(new Expression(null, [
+                new MethodUpdate('this', 'case', new Type('Obj', 'Obj', 'Obj'), 'tt',
                     new Lambda([new LambdaArg('z', new Type('Obj')), new LambdaArg('s', new Type('Obj'))],
-                    new Expression(null, [new MethodCall('s', 'zero')])))
+                    new Expression(null, [
+                        new MethodCall('s', 'zero')
+                    ])))
             ]), [
                 new FieldUpdate(null, 'val', new Type('Int'), new Expression(null, [
-                    new Function(new Parameter('zero', new MethodCall(null, 'val')), '+', new Parameter(new Int(1)))
+                    new Function(new Parameter('this', new MethodCall(null, 'val')), '+', new Parameter(new Int(1)))
                 ]))
             ])),
             new Field('val', new Type('Int'), new Expression(null, [
@@ -298,30 +300,31 @@ const sigma5 = new Sigma(new ObjectType([
         ]))),
     ])),
     new Method('main', new Type('Int'), 'top',
-        new Expression(new Expression(null, [
-            new MethodCall('top', 'numeral')
-        ]), [
-            new MethodCall(null, 'fib', [
-                new Parameter('top', [
-                    new MethodCall(null, 'numeral'),
-                    new MethodCall(null, 'zero'),
-                    new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
+        new Expression(
+            new Expression(null, [
+                new MethodCall('top', 'numeral')
+            ]), [
+                new MethodCall(null, 'fib', [
+                    new Parameter('top', [
+                        new MethodCall(null, 'numeral'),
+                        new MethodCall(null, 'zero'),
+                        new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
             ])]),
-            new MethodCall(null, 'val')
+                new MethodCall(null, 'val')
     ]))
 ]), [
     new MethodCall(null, 'main')

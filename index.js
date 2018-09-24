@@ -84,6 +84,8 @@ function a(ctx, method) {
         } else {
             return evalMethodCall(ctx, method.content.methodCall);
         }
+    } else if (method.content instanceof Lambda) {
+        return method.content;
     } else {
         return evalBodyParse(ctx, method.content);
     }
@@ -296,7 +298,6 @@ function f(ctx) {
 }
 
 function evalMethodCall(ctx, mtd) {
-
     const method = findMethodByName(ctx, mtd.name);
     if (method) {
         const type = method.type.args;
@@ -369,8 +370,8 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-// console.log(evalMain(sigma));
-// console.log(evalMain(sigma2));
-// console.log(evalMain(sigma3));
-// console.log(evalMain(sigma4));
+console.log(evalMain(sigma));
+console.log(evalMain(sigma2));
+console.log(evalMain(sigma3));
+console.log(evalMain(sigma4));
 console.log(evalMain(sigma5));
