@@ -281,15 +281,37 @@ function validateArgs(type, mtd) {
     }
 }
 
+function f(ctx) {
+    if (ctx.properties) {
+        let a = {};
+        ctx.properties.forEach(e => {
+           if (e instanceof Method) {
+               a[e.ctx] = ctx;
+           }
+        });
+        return a;
+    } else {
+        return ctx;
+    }
+}
+
 function evalMethodCall(ctx, mtd) {
 
     const method = findMethodByName(ctx, mtd.name);
     if (method) {
         const type = method.type.args;
         validateArgs([...type].slice(0, type.length - 1), mtd);
-        const context = method.ctx ? typeof method.ctx === 'string' ? ctx[method.ctx] ? ctx : { [method.ctx]: ctx } : method.ctx : ctx;
+        const context = method.ctx
+            ? typeof method.ctx === 'string'
+                ? ctx[method.ctx]
+                    ? ctx
+                    : mtd.args.length > 1
+                        ? ctx
+                        : { [method.ctx]: ctx }
+                : { ...ctx, ...f(method.ctx) }
+            : ctx;
         // const context = method.ctx ? typeof method.ctx === 'string' ? ctx : method.ctx : ctx;
-        context._ctx = method.ctx || context._ctx;
+        context._ctx = mtd.ctx || method.ctx || context._ctx;
         const result = evalBodyParse(context, method.body, mtd.args);
         const outputType = type[type.length - 1];
         validateArgs([outputType], { name: mtd.name, args: [result] });

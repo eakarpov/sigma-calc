@@ -281,22 +281,31 @@ const sigma5 = new Sigma(new ObjectType([
                 new Parameter('numeral', new MethodCall(null, 'zero')),
                 new Lambda([new LambdaArg('x', new Type('Obj'))],
                     new Expression(null, [
-                        new MethodCall('x', 'case', [ new Parameter('n')], [new Lambda([ new LambdaArg('y', new Type('Obj'))],
-                            new Expression(new Expression(
-                                null, [
-                                new MethodCall('numeral', 'fib', [new Parameter('x')], [new MethodCall(null, 'add', [new Parameter('numeral', new MethodCall(null, 'fib', [
-                                    new Parameter('y')
-                                ]))])])
-                                ])))])
-                    ]))])
+                        new MethodCall('x', 'case', [
+                            new Parameter('n'),
+                            new Lambda([ new LambdaArg('y', new Type('Obj'))],
+                                new Expression(new Expression(null, [
+                                    new MethodCall('numeral', 'fib', [
+                                        new Parameter('x'),
+                                        new MethodCall(null, 'add', [
+                                            new Parameter('numeral', new MethodCall(null, 'fib', [new Parameter('y')]))
+                                        ])
+                                    ])
+                                ])))
+                        ])
+                    ]))
+            ])
         ]))),
     ])),
-    new Method('main', new Type('Int'), 'top', new Expression(new Expression(null, [
-        new MethodCall('top', 'numeral')
-    ]), [
-        new MethodCall(null, 'fib', [ new Parameter('top', [
-            new MethodCall(null, 'numeral'),
-            new MethodCall(null, 'zero'),
+    new Method('main', new Type('Int'), 'top',
+        new Expression(new Expression(null, [
+            new MethodCall('top', 'numeral')
+        ]), [
+            new MethodCall(null, 'fib', [
+                new Parameter('top', [
+                    new MethodCall(null, 'numeral'),
+                    new MethodCall(null, 'zero'),
+                    new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
@@ -311,10 +320,8 @@ const sigma5 = new Sigma(new ObjectType([
             // new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
-
-        ])]),
-        new MethodCall(null, 'val')
+            ])]),
+            new MethodCall(null, 'val')
     ]))
 ]), [
     new MethodCall(null, 'main')
