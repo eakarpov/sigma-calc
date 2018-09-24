@@ -202,7 +202,11 @@ function evalExprBody(ctx, method, args) {
         return evalFunction(ctx, method);
     }
     if (method instanceof Parameter) {
-        return b(d(ctx, method));
+        if (method.ctx === 'n') {
+            console.log(1);
+        }
+        const a = b(d(ctx, method));
+        return a;
     }
 }
 
@@ -298,6 +302,9 @@ function f(ctx) {
 }
 
 function evalMethodCall(ctx, mtd) {
+    if (mtd.name === 'case') {
+        console.log(1);
+    }
     const method = findMethodByName(ctx, mtd.name);
     if (method) {
         const type = method.type.args;
@@ -370,8 +377,8 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-console.log(evalMain(sigma));
-console.log(evalMain(sigma2));
-console.log(evalMain(sigma3));
-console.log(evalMain(sigma4));
+// console.log(evalMain(sigma));
+// console.log(evalMain(sigma2));
+// console.log(evalMain(sigma3));
+// console.log(evalMain(sigma4));
 console.log(evalMain(sigma5));
