@@ -184,7 +184,7 @@ function evalExprBody(ctx, method, args) {
         // if (!mtd) throw new Error(`Method ${method.method} not found error`);
         if (mtd) {
             validateType([...mtd.type.args].slice(0, mtd.type.args.length - 1), method.type.args);
-            const method2 = new Method(method.method, method.type, (method.ctx === null || method.ctx === method._ctx) ? method.ctx : newContext, body);
+            const method2 = new Method(method.method, method.type, (method.ctx === null || method.ctx === method._ctx) ? method.ctx : ctx._ctx, body);
             validateType([mtd.type.args[mtd.type.args.length - 1]], [method.type.args[method.type.args.length - 1]]);
             return substitute(method.ctx && ctx, method.ctx || context, method.method, method2);
         } else {
@@ -250,7 +250,7 @@ function evalBodyParse(ctx, method, args) {
                 }
                 argObj[e.name] = res;
             });
-            return evalBodyParse({...ctx, _args: argObj }, method.body);
+            return evalBodyParse({...ctx, _args: { ...ctx._args, ...argObj }}, method.body);
         }
 
     }
