@@ -224,8 +224,10 @@ function evalBodyParse(ctx, method, args) {
         const prop = Array.isArray(method.properties) &&  method.properties[0];
         if (ctx[prop.ctx]) {
             ctx[prop.ctx] = setCtx(ctx[prop.ctx], method);
+            ctx._ctx = prop.ctx;
         } else {
             ctx[prop.ctx] = method;
+            ctx._ctx = prop.ctx;
         }
         return ctx;
     }
@@ -345,8 +347,8 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-console.log(evalMain(sigma));
-console.log(evalMain(sigma2));
-console.log(evalMain(sigma3));
-console.log(evalMain(sigma4));
+// console.log(evalMain(sigma));
+// console.log(evalMain(sigma2));
+// console.log(evalMain(sigma3));
+// console.log(evalMain(sigma4));
 console.log(evalMain(sigma5));
