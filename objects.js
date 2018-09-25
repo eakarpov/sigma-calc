@@ -247,7 +247,7 @@ const sigma5 = new Sigma(new ObjectType([
                 new MethodUpdate('this', 'case', new Type('Obj', 'Obj', 'Obj'), 'tt',
                     new Lambda([new LambdaArg('z', new Type('Obj')), new LambdaArg('s', new Type('Obj'))],
                     new Expression(null, [
-                        new MethodCall('s', 'zero')
+                        new MethodCall('s', null, [new Parameter('this')])
                     ])))
             ]), [
                 new FieldUpdate(null, 'val', new Type('Int'), new Expression(null, [
@@ -309,21 +309,22 @@ const sigma5 = new Sigma(new ObjectType([
                         new MethodCall(null, 'numeral'),
                         new MethodCall(null, 'zero'),
                         new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            new MethodCall(null, 'succ'),
-            ])]),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+            // new MethodCall(null, 'succ'),
+                        ])
+                ]),
                 new MethodCall(null, 'val')
     ]))
 ]), [

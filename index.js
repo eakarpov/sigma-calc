@@ -202,7 +202,7 @@ function evalExprBody(ctx, method, args) {
         return evalFunction(ctx, method);
     }
     if (method instanceof Parameter) {
-        if (method.ctx === 'n') {
+        if (method.ctx === 'x') {
             console.log(1);
         }
         const a = b(d(ctx, method));
@@ -242,12 +242,14 @@ function evalBodyParse(ctx, method, args) {
             const argObj = {};
             method.args.forEach((e, i) => {
                 let res = void 0;
-                if (args[i] instanceof Parameter) {
-                    res = evalExprBody(ctx, args[i], args);
-                    res = res[res._ctx];
-                } else {
+                // if (args[i] instanceof Parameter) {
+                //     res = evalExprBody(ctx, args[i], args);
+                //     if (!(res instanceof ObjectType)) {
+                //         res = res[res._ctx];
+                //     }
+                // } else {
                     res = args[i];
-                }
+                // }
                 argObj[e.name] = res;
             });
             return evalBodyParse({...ctx, _args: { ...ctx._args, ...argObj }}, method.body);
@@ -301,11 +303,27 @@ function f(ctx) {
     }
 }
 
+function h(ctx, method) {
+    // const contextName = method.ctx || ctx._ctx;
+    const context = (!method.ctx || typeof method.ctx === 'string') ? (ctx[method.ctx] || ctx[ctx._ctx] || ctx) : method.ctx;
+    return findMethodByName(context, method.name);
+}
+
 function evalMethodCall(ctx, mtd) {
-    if (mtd.name === 'case') {
-        console.log(1);
+    if (mtd.args) {
+        let index = 0;
+        for (let arg of mtd.args) {
+            if (arg instanceof Parameter) {
+                arg = evalExprBody(ctx, arg);
+                if (!(arg instanceof ObjectType)) {
+                    arg = arg[arg._ctx];
+                }
+                mtd.args[index] = arg;
+            }
+            index++;
+        }
     }
-    const method = findMethodByName(ctx, mtd.name);
+    const method = h(ctx, mtd);
     if (method) {
         const type = method.type.args;
         validateArgs([...type].slice(0, type.length - 1), mtd);
@@ -325,7 +343,13 @@ function evalMethodCall(ctx, mtd) {
         validateArgs([outputType], { name: mtd.name, args: [result] });
         return result;
     } else {
-        throw new Error(`Method ${mtd.name} not found error`);
+        const execCtx = ctx._args && ctx._args[mtd.ctx];
+        if (execCtx) {
+            switch (execCtx.__proto__) {
+                case Lambda.prototype: return evalBodyParse(ctx, execCtx, mtd.args);
+                default: throw new Error(`Method ${mtd.name} not found error`);
+            }
+        }
     }
 }
 
