@@ -61,7 +61,8 @@ function d(ctx, body) {
     } else {
         ctx._ctx = body.ctx;
         if (Array.isArray(body.methodCall)) {
-            return evalExprArr({ args: body.methodCall, context: ctx });
+            const result = evalExprArr({ args: body.methodCall, context: ctx });
+            return result;
         } else {
             return evalMethodCall(ctx, body.methodCall);
         }
@@ -202,11 +203,8 @@ function evalExprBody(ctx, method, args) {
         return evalFunction(ctx, method);
     }
     if (method instanceof Parameter) {
-        if (method.ctx === 'x') {
-            console.log(1);
-        }
-        const a = b(d(ctx, method));
-        return a;
+        const astra = b(d(ctx, method));
+        return astra;
     }
 }
 
@@ -385,7 +383,10 @@ function evalExprArr(sigma, i = 0, newContext) {
     const call = sigma.args[i];
     // const next = evalExprBody({...sigma.context, ...newContext }, call, sigma._args);
     const next = evalExprBody(setCtx(sigma.context, newContext || {}), call, sigma._args);
-    if (i < sigma.args.length - 1) return evalExprArr(sigma, i + 1, next);
+    if (i < sigma.args.length - 1) {
+        const rew = evalExprArr(sigma, i + 1, next);
+        return rew;
+    }
     return next;
 }
 
