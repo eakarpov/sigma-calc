@@ -304,7 +304,13 @@ function f(ctx) {
 function h(ctx, method) {
     // const contextName = method.ctx || ctx._ctx;
     const context = (!method.ctx || typeof method.ctx === 'string') ? (ctx[method.ctx] || ctx[ctx._ctx] || ctx) : method.ctx;
-    return findMethodByName(context, method.name);
+    const mtd = findMethodByName(context, method.name);
+    if (mtd) {
+        return mtd;
+    } else {
+        return void 0;
+        // return findMethodByName(ctx, method.name);
+    }
 }
 
 function evalMethodCall(ctx, mtd) {
@@ -321,6 +327,7 @@ function evalMethodCall(ctx, mtd) {
             index++;
         }
     }
+    // ctx._ctx = mtd.ctx || ctx._ctx;
     const method = h(ctx, mtd);
     if (method) {
         const type = method.type.args;
@@ -379,15 +386,23 @@ function setCtx(...contexts) {
     return context;
 }
 
-function evalExprArr(sigma, i = 0, newContext) {
-    const call = sigma.args[i];
-    // const next = evalExprBody({...sigma.context, ...newContext }, call, sigma._args);
-    const next = evalExprBody(setCtx(sigma.context, newContext || {}), call, sigma._args);
-    if (i < sigma.args.length - 1) {
-        const rew = evalExprArr(sigma, i + 1, next);
-        return rew;
+// function evalExprArr(sigma, i = 0, newContext) {
+//     const call = sigma.args[i];
+//     // const next = evalExprBody({...sigma.context, ...newContext }, call, sigma._args);
+//     const next = evalExprBody(setCtx(sigma.context, newContext || {}), call, sigma._args);
+//     if (i < sigma.args.length - 1) {
+//         const rew = evalExprArr(sigma, i + 1, next);
+//         return rew;
+//     }
+//     return next;
+// }
+
+function evalExprArr(sigma) {
+    let newContext;
+    for (let i = 0; i < sigma.args.length; i++) {
+        newContext = evalExprBody(setCtx(sigma.context, newContext || {}), sigma.args[i], sigma._args);
     }
-    return next;
+    return newContext;
 }
 
 function evalMain(sigma, i = 0, newContext) {
