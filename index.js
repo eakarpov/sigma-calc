@@ -86,7 +86,7 @@ function a(ctx, method) {
             return evalMethodCall(ctx, method.content.methodCall);
         }
     } else if (method.content instanceof Lambda) {
-        return method.content;
+        return attribution(ctx, method.content);
     } else {
         return evalBodyParse(ctx, method.content);
     }
@@ -219,6 +219,52 @@ function evalExpr(ctx, expr, args) {
     return evalExprArr({ context: e(ctx, expr, args) || expr.ctx || ctx, args: expr.args, _args: args || [] });
 }
 
+function getFromArgs(args, mArg) {
+    for (const arg of args) {
+        if (arg.name === mArg.ctx) return true;
+    }
+    return false;
+}
+
+function attributeExpression(ctx, mtd, args) {
+    let index = 0;
+    for (let arg of mtd.args) {
+        if (arg instanceof Parameter) {
+            arg = evalExprBody(ctx, arg);
+            if (!(arg instanceof ObjectType)) {
+                arg = arg[arg._ctx];
+            }
+            mtd.args[index] = arg;
+        }
+        if (arg instanceof MethodCall) {
+            // validate context
+            for (const mArg of arg.args) {
+                if (!getFromArgs(args, mArg)) {
+                    if (mArg instanceof Parameter) {
+                        arg.args[index] = evalExprBody(ctx, mArg);
+                    }
+                }
+            }
+        }
+        index++;
+    }
+    return mtd;
+}
+
+function attributeBody(ctx, body, args) {
+    if (body instanceof Expression) {
+        return attributeExpression(ctx, body, args);
+    }
+    return body;
+}
+
+function attribution(ctx,func) {
+    const args = func.args;
+    func.body = attributeBody(ctx, func.body, args);
+    // something to do
+    return func;
+}
+
 function evalBodyParse(ctx, method, args) {
     // console.log(method);
     if (method instanceof Int) return method.value;
@@ -308,8 +354,8 @@ function h(ctx, method) {
     if (mtd) {
         return mtd;
     } else {
-        return void 0;
-        // return findMethodByName(ctx, method.name);
+        // return void 0;
+        return findMethodByName(ctx, method.name);
     }
 }
 
@@ -324,10 +370,20 @@ function evalMethodCall(ctx, mtd) {
                 }
                 mtd.args[index] = arg;
             }
+            // if (arg instanceof Lambda) {
+            //     arg = evalBodyParse(ctx, arg);
+            //     if (!(arg instanceof ObjectType)) {
+            //         arg = arg[arg._ctx];
+            //     }
+            //     mtd.args[index] = arg;
+            // }
             index++;
         }
     }
-    // ctx._ctx = mtd.ctx || ctx._ctx;
+    if (mtd.name === 'fib') {
+        console.log(1);
+    }
+    ctx._ctx = mtd.ctx || ctx._ctx;
     const method = h(ctx, mtd);
     if (method) {
         const type = method.type.args;
@@ -399,6 +455,7 @@ function setCtx(...contexts) {
 
 function evalExprArr(sigma) {
     let newContext;
+    if (!sigma.args) return sigma.context;
     for (let i = 0; i < sigma.args.length; i++) {
         newContext = evalExprBody(setCtx(sigma.context, newContext || {}), sigma.args[i], sigma._args);
     }

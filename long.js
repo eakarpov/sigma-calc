@@ -815,22 +815,20 @@ function setCtx(...contexts) {
     return context;
 }
 
-function evalExprArr(sigma, i = 0, newContext) {
-    const call = sigma.args[i];
-    // const next = evalExprBody({...sigma.context, ...newContext }, call, sigma._args);
-    const next = evalExprBody(setCtx(sigma.context, newContext || {}), call, sigma._args);
-    if (i < sigma.args.length - 1) {
-        const rew = evalExprArr(sigma, i + 1, next);
-        return rew;
+function evalExprArr(sigma) {
+    let newContext;
+    for (let i = 0; i < sigma.args.length; i++) {
+        newContext = evalExprBody(setCtx(sigma.context, newContext || {}), sigma.args[i], sigma._args);
     }
-    return next;
+    return newContext;
 }
 
-function evalMain(sigma, i = 0, newContext) {
-    const call = sigma.calls[i];
-    const next = g(newContext || sigma.objectType, call);
-    if (i < sigma.calls.length - 1) return evalMain(sigma, i + 1, next);
-    return next;
+function evalMain(sigma) {
+    let newContext;
+    for (let i = 0; i < sigma.calls.length; i++) {
+        newContext = g(newContext || sigma.objectType, sigma.calls[i]);
+    }
+    return newContext;
 }
 
 // function evaluator(sigma) {

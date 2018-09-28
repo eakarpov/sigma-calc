@@ -287,13 +287,12 @@ const sigma5 = new Sigma(new ObjectType([
                             new Parameter('n'),
                             new Lambda([ new LambdaArg('y', new Type('Obj'))],
                                 new Expression(new Expression(null, [
-                                    new MethodCall('numeral', 'fib', [
-                                        new Parameter('x'),
-                                        new MethodCall(null, 'add', [
-                                            new Parameter('numeral', new MethodCall(null, 'fib', [new Parameter('y')]))
-                                        ])
+                                    new MethodCall('numeral', 'fib', [new Parameter('x')]),
+                                ]), [
+                                    new MethodCall(null, 'add', [
+                                        new Parameter('numeral', new MethodCall(null, 'fib', [new Parameter('y')]))
                                     ])
-                                ])))
+                                ]))
                         ])
                     ]))
             ])
@@ -309,7 +308,7 @@ const sigma5 = new Sigma(new ObjectType([
                         new MethodCall(null, 'numeral'),
                         new MethodCall(null, 'zero'),
                         new MethodCall(null, 'succ'),
-            // new MethodCall(null, 'succ'),
+            new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
             // new MethodCall(null, 'succ'),
