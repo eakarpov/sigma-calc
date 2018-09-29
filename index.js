@@ -204,6 +204,9 @@ function evalExprBody(ctx, method, args) {
     }
     if (method instanceof Parameter) {
         const astra = b(d(ctx, method));
+      /*  ctx._ctx = '_default';
+        ctx._default = astra;
+        return ctx;*/
         return astra;
     }
 }
@@ -241,7 +244,9 @@ function attributeExpression(ctx, mtd, args) {
             for (const mArg of arg.args) {
                 if (!getFromArgs(args, mArg)) {
                     if (mArg instanceof Parameter) {
-                        arg.args[index] = evalExprBody(ctx, mArg);
+                        // arg.args[index] = evalExprBody(ctx, mArg);
+                        const res = evalExprBody(ctx, mArg);
+                        arg.args[index] = res[res._ctx];
                     }
                 }
             }
@@ -296,7 +301,14 @@ function evalBodyParse(ctx, method, args) {
                 // }
                 argObj[e.name] = res;
             });
-            return evalBodyParse({...ctx, _args: { ...ctx._args, ...argObj }}, method.body);
+            const res =  evalBodyParse({...ctx, _args: { ...ctx._args, ...argObj }}, method.body);
+            // do not use
+            // for (const arg of Object.keys(argObj)) {
+            //     if (ctx._args[arg]) {
+            //         delete ctx._args[arg];
+            //     }
+            // }
+            return res;
         }
 
     }
@@ -350,7 +362,8 @@ function f(ctx) {
 function h(ctx, method) {
     // const contextName = method.ctx || ctx._ctx;
     const context = (!method.ctx || typeof method.ctx === 'string') ? (ctx[method.ctx] || ctx[ctx._ctx] || ctx) : method.ctx;
-    const mtd = findMethodByName(context, method.name);
+    const ctxVar = _findVariable(ctx, method.ctx);
+    const mtd = findMethodByName(ctxVar || context, method.name);
     if (mtd) {
         return mtd;
     } else {
@@ -380,7 +393,7 @@ function evalMethodCall(ctx, mtd) {
             index++;
         }
     }
-    if (mtd.name === 'fib') {
+    if (mtd.name === 'case' && mtd.ctx === 'x') {
         console.log(1);
     }
     ctx._ctx = mtd.ctx || ctx._ctx;
@@ -399,7 +412,10 @@ function evalMethodCall(ctx, mtd) {
             : ctx;
         // const context = method.ctx ? typeof method.ctx === 'string' ? ctx : method.ctx : ctx;
         context._ctx = mtd.ctx || method.ctx || context._ctx;
-        const result = evalBodyParse(context, method.body, mtd.args);
+        let result = evalBodyParse(context, method.body, mtd.args);
+        // if (result && result._ctx === '_default') {
+        //     result = result._default;
+        // }
         const outputType = type[type.length - 1];
         validateArgs([outputType], { name: mtd.name, args: [result] });
         return result;
@@ -474,8 +490,8 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-// console.log(evalMain(sigma));
-// console.log(evalMain(sigma2));
-// console.log(evalMain(sigma3));
-// console.log(evalMain(sigma4));
+console.log(evalMain(sigma));
+console.log(evalMain(sigma2));
+console.log(evalMain(sigma3));
+console.log(evalMain(sigma4));
 console.log(evalMain(sigma5));
