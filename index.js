@@ -26,6 +26,9 @@ function findMethodByName(ctx, name) {
 
 function _findVariable(ctx, name) {
     if (ctx._args && ctx._args[name]) {
+        if (ctx._args[name]._ctx) {
+            return ctx._args[name][ctx._args[name]._ctx];
+        }
         return ctx._args[name];
     } else {
         if (ctx instanceof ObjectType) {
@@ -70,6 +73,9 @@ function d(ctx, body) {
 }
 
 function b(body) {
+    // if (body._default) {
+    //     body = body._default;
+    // }
     if (body instanceof Int || body instanceof Float) return body.value;
     return body;
 }
@@ -81,7 +87,11 @@ function evalFunction(ctx, body) {
 function a(ctx, method) {
     if (method.content instanceof Parameter) {
         if (!method.content.methodCall) {
-            return ctx._args[method.content.ctx];
+            let varble = ctx._args[method.content.ctx];
+            if (varble._ctx) {
+                varble = varble[varble._ctx];
+            }
+            return varble;
         } else {
             return evalMethodCall(ctx, method.content.methodCall);
         }
@@ -204,16 +214,23 @@ function evalExprBody(ctx, method, args) {
     }
     if (method instanceof Parameter) {
         const astra = b(d(ctx, method));
-      /*  ctx._ctx = '_default';
-        ctx._default = astra;
-        return ctx;*/
+        if (typeof astra !== 'object') {
+            return astra;
+        }
+        if (astra instanceof ObjectType) {
+            ctx._ctx = '_default';
+            ctx._default = astra;
+            return ctx;
+        }
         return astra;
+        // return astra;
     }
 }
 
 function e(ctx, expr, args) {
     if (expr.ctx) {
-        return evalExpr(ctx, expr.ctx, args);
+        const res = evalExpr(ctx, expr.ctx, args);
+        return res;
     }
     return void 0;
 }
@@ -272,6 +289,9 @@ function attribution(ctx,func) {
 
 function evalBodyParse(ctx, method, args) {
     // console.log(method);
+    if (method._default) {
+        method = method._default;
+    }
     if (method instanceof Int) return method.value;
     if (method instanceof Float) return method.value;
     if (typeof method === 'string') return method;
@@ -362,7 +382,8 @@ function f(ctx) {
 function h(ctx, method) {
     // const contextName = method.ctx || ctx._ctx;
     const context = (!method.ctx || typeof method.ctx === 'string') ? (ctx[method.ctx] || ctx[ctx._ctx] || ctx) : method.ctx;
-    const ctxVar = _findVariable(ctx, method.ctx);
+    const ctxVar = _findVariable(ctx, method.ctx || ctx._ctx);
+    if (!ctxVar && ctx._ctx === '_default') return findMethodByName(ctx._default, method.name);
     const mtd = findMethodByName(ctxVar || context, method.name);
     if (mtd) {
         return mtd;
@@ -373,11 +394,15 @@ function h(ctx, method) {
 }
 
 function evalMethodCall(ctx, mtd) {
+    if (mtd.name === 'succ') {
+        console.log(1);
+    }
     if (mtd.args) {
         let index = 0;
         for (let arg of mtd.args) {
             if (arg instanceof Parameter) {
-                arg = evalExprBody(ctx, arg);
+                const nCtx = clone(ctx);
+                arg = evalExprBody(nCtx, arg);
                 if (!(arg instanceof ObjectType)) {
                     arg = arg[arg._ctx];
                 }
@@ -393,10 +418,7 @@ function evalMethodCall(ctx, mtd) {
             index++;
         }
     }
-    if (mtd.name === 'case' && mtd.ctx === 'x') {
-        console.log(1);
-    }
-    ctx._ctx = mtd.ctx || ctx._ctx;
+    ctx._ctx = ctx._ctx === '_default' ? ctx._ctx : (mtd.ctx || ctx._ctx);
     const method = h(ctx, mtd);
     if (method) {
         const type = method.type.args;
@@ -405,19 +427,21 @@ function evalMethodCall(ctx, mtd) {
             ? typeof method.ctx === 'string'
                 ? ctx[method.ctx]
                     ? ctx
-                    : mtd.args.length > 1
+                    // : ctx
+                    : !(ctx instanceof ObjectType)
                         ? ctx
                         : { [method.ctx]: ctx }
                 : { ...ctx, ...f(method.ctx) }
             : ctx;
         // const context = method.ctx ? typeof method.ctx === 'string' ? ctx : method.ctx : ctx;
-        context._ctx = mtd.ctx || method.ctx || context._ctx;
-        let result = evalBodyParse(context, method.body, mtd.args);
-        // if (result && result._ctx === '_default') {
-        //     result = result._default;
-        // }
+        context._ctx = context._ctx === '_default' ? context._ctx : (mtd.ctx || method.ctx || context._ctx);
+        const result = evalBodyParse(context, method.body, mtd.args);
+        let checker = result;
+        if (result._ctx === '_default') {
+            checker = result._default;
+        }
         const outputType = type[type.length - 1];
-        validateArgs([outputType], { name: mtd.name, args: [result] });
+        validateArgs([outputType], { name: mtd.name, args: [checker] });
         return result;
     } else {
         const execCtx = ctx._args && ctx._args[mtd.ctx];
@@ -490,8 +514,8 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-console.log(evalMain(sigma));
-console.log(evalMain(sigma2));
-console.log(evalMain(sigma3));
-console.log(evalMain(sigma4));
+// console.log(evalMain(sigma));
+// console.log(evalMain(sigma2));
+// console.log(evalMain(sigma3));
+// console.log(evalMain(sigma4));
 console.log(evalMain(sigma5));
