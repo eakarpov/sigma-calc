@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("./types");
 exports.sigma = new types_1.Sigma(new types_1.Sigma(new types_1.Sigma(new types_1.Sigma(new types_1.Sigma(new types_1.ObjectType([
     new types_1.Field('x', new types_1.Type('Int'), new types_1.Int(0)),

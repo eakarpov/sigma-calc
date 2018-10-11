@@ -98,34 +98,33 @@ function d(ctx, body) {
     }
 }
 function b(body) {
-    // if (body._default) {
-    //     body = body._default;
-    // }
-    if (body instanceof types_1.Int || body instanceof types_1.Float)
+    if (body instanceof types_1.Int || body instanceof types_1.Float) {
         return body.value;
+    }
     return body;
 }
 function evalFunction(ctx, body) {
-    return eval(b(d(ctx, body.arg1)) + " " + body.operand + " " + b(d(ctx, body.arg2)));
+    ctx.result = eval(b(d(ctx, body.arg1)) + " " + body.operand + " " + b(d(ctx, body.arg2)));
+    return ctx;
 }
 function a(ctx, method) {
-    if (method.content instanceof types_1.Parameter) {
-        if (!method.content.methodCall) {
-            var varble = ctx._args[method.content.ctx];
+    if (method.body instanceof types_1.Parameter) {
+        if (!method.body.methodCall) {
+            var varble = ctx._args[method.body.ctx];
             if (varble._ctx) {
                 varble = varble[varble._ctx];
             }
             return varble;
         }
         else {
-            return evalMethodCall(ctx, method.content.methodCall);
+            return evalMethodCall(ctx, method.body.methodCall);
         }
     }
-    else if (method.content instanceof types_1.Lambda) {
-        return attribution(ctx, method.content);
+    else if (method.body instanceof types_1.Lambda) {
+        return attribution(ctx, method.body);
     }
     else {
-        return evalBodyParse(ctx, method.content, void 0);
+        return evalBodyParse(ctx, method.body);
     }
 }
 function c(method, body) {
@@ -317,10 +316,6 @@ function attribution(ctx, func) {
     return func;
 }
 function evalBodyParse(ctx, method, args) {
-    // console.log(method);
-    if (method._default) {
-        method = method._default;
-    }
     if (method instanceof types_1.Int)
         return method.value;
     if (method instanceof types_1.Float)
@@ -414,7 +409,6 @@ function f(ctx) {
     }
 }
 function h(ctx, method) {
-    // const contextName = method.ctx || ctx._ctx;
     var context = (!method.ctx || typeof method.ctx === 'string') ? (ctx.ctxObj[method.ctx] || ctx.ctxObj[ctx.ctxObj._ctx] || ctx) : method.ctx;
     var ctxVar = _findVariable(ctx, method.ctx || ctx.ctxObj._ctx);
     if (!ctxVar && ctx.ctxObj._ctx === '_default')
@@ -424,7 +418,6 @@ function h(ctx, method) {
         return mtd;
     }
     else {
-        // return void 0;
         return findMethodByName(ctx, method.name);
     }
 }
@@ -454,9 +447,6 @@ function evalMethodCall(ctx, mtd) {
             ? typeof method.ctx === 'string'
                 ? ctx[method.ctx]
                     ? ctx
-                    // : ctx
-                    // : !(ctx instanceof ObjectType)
-                    //     ? ctx
                     : (_a = {}, _a[method.ctx] = ctx, _a)
                 : __assign({}, ctx, f(method.ctx))
             : ctx;

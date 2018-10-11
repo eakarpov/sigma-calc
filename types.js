@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var Field = /** @class */ (function () {
     function Field(name, type, body) {
         this.name = name;
@@ -36,22 +36,22 @@ var LambdaArg = /** @class */ (function () {
 }());
 exports.LambdaArg = LambdaArg;
 var FieldUpdate = /** @class */ (function () {
-    function FieldUpdate(ctx, method, type, content) {
+    function FieldUpdate(ctx, method, type, body) {
         this.ctx = ctx;
         this.method = method;
         this.type = type;
-        this.content = content;
+        this.body = body;
     }
     return FieldUpdate;
 }());
 exports.FieldUpdate = FieldUpdate;
 var MethodUpdate = /** @class */ (function () {
-    function MethodUpdate(ctx, method, type, _ctx, content) {
+    function MethodUpdate(ctx, method, type, _ctx, body) {
         this.ctx = ctx;
         this.method = method;
         this.type = type;
         this._ctx = _ctx;
-        this.content = content;
+        this.body = body;
     }
     return MethodUpdate;
 }());

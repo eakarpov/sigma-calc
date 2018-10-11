@@ -19,12 +19,12 @@ export class LambdaArg {
 }
 
 export class FieldUpdate {
-  constructor(public ctx, public method, public type, public content) {
+  constructor(public ctx, public method, public type, public body) {
   }
 }
 
 export class MethodUpdate {
-  constructor(public ctx, public method, public type, public _ctx, public content) {
+  constructor(public ctx, public method, public type, public _ctx, public body) {
   }
 }
 

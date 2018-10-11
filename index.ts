@@ -49,14 +49,14 @@ function findVariable(ctx, name) {
     throw new Error(`variable ${name} not found in the scope`);
 }
 
-function findIndex(ctx, name) {
+function findIndex(ctx: ObjectType, name: string) {
     for (let i =0; i<ctx.properties.length; i++) {
         if (ctx.properties[i].name === name) return i;
     }
     return -1;
 }
 
-function d(ctx, body) {
+function d(ctx: Context, body) {
     if (!body.methodCall) {
         if (body.ctx instanceof Int) return body.ctx;
         if (body.ctx instanceof Float) return body.ctx;
@@ -73,32 +73,32 @@ function d(ctx, body) {
 }
 
 function b(body) {
-    // if (body._default) {
-    //     body = body._default;
-    // }
-    if (body instanceof Int || body instanceof Float) return body.value;
+    if (body instanceof Int || body instanceof Float) {
+        return body.value;
+    }
     return body;
 }
 
-function evalFunction(ctx, body) {
-    return eval(`${b(d(ctx, body.arg1))} ${body.operand} ${b(d(ctx, body.arg2))}`);
+function evalFunction(ctx: Context, body: Function) {
+    ctx.result = eval(`${b(d(ctx, body.arg1))} ${body.operand} ${b(d(ctx, body.arg2))}`);
+    return ctx;
 }
 
-function a(ctx, method) {
-    if (method.content instanceof Parameter) {
-        if (!method.content.methodCall) {
-            let varble = ctx._args[method.content.ctx];
+function a(ctx, method: Method) {
+    if (method.body instanceof Parameter) {
+        if (!method.body.methodCall) {
+            let varble = ctx._args[method.body.ctx];
             if (varble._ctx) {
                 varble = varble[varble._ctx];
             }
             return varble;
         } else {
-            return evalMethodCall(ctx, method.content.methodCall);
+            return evalMethodCall(ctx, method.body.methodCall);
         }
-    } else if (method.content instanceof Lambda) {
-        return attribution(ctx, method.content);
+    } else if (method.body instanceof Lambda) {
+        return attribution(ctx, method.body);
     } else {
-        return evalBodyParse(ctx, method.content, void 0);
+        return evalBodyParse(ctx, method.body);
     }
 }
 
@@ -287,11 +287,7 @@ function attribution(ctx,func) {
     return func;
 }
 
-function evalBodyParse(ctx, method, args) {
-    // console.log(method);
-    if (method._default) {
-        method = method._default;
-    }
+function evalBodyParse(ctx: Context, method: any, args?) {
     if (method instanceof Int) return method.value;
     if (method instanceof Float) return method.value;
     if (typeof method === 'string') return method;
@@ -381,7 +377,6 @@ function f(ctx) {
 }
 
 function h(ctx: Context, method: MethodCall) {
-    // const contextName = method.ctx || ctx._ctx;
     const context = (!method.ctx || typeof method.ctx === 'string') ? (ctx.ctxObj[method.ctx] || ctx.ctxObj[ctx.ctxObj._ctx as string] || ctx) : method.ctx;
     const ctxVar = _findVariable(ctx, method.ctx || ctx.ctxObj._ctx);
     if (!ctxVar && ctx.ctxObj._ctx === '_default') return findMethodByName(ctx.ctxObj._default, method.name);
@@ -389,7 +384,6 @@ function h(ctx: Context, method: MethodCall) {
     if (mtd) {
         return mtd;
     } else {
-        // return void 0;
         return findMethodByName(ctx, method.name);
     }
 }
@@ -418,9 +412,6 @@ function evalMethodCall(ctx: Context, mtd: MethodCall) {
             ? typeof method.ctx === 'string'
                 ? ctx[method.ctx]
                     ? ctx
-                    // : ctx
-                    // : !(ctx instanceof ObjectType)
-                    //     ? ctx
                         : { [method.ctx]: ctx }
                 : { ...ctx, ...f(method.ctx) }
             : ctx;
