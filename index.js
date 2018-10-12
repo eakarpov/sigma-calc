@@ -1,68 +1,35 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var types_1 = require("./types");
 var objects_1 = require("./objects");
 function findMethodByName(ctx, name) {
-    if (ctx instanceof types_1.ObjectType) {
-        for (var _i = 0, _a = ctx.properties; _i < _a.length; _i++) {
-            var prop = _a[_i];
-            if (prop.name === name)
-                return prop;
-        }
-    }
-    else {
-        for (var _b = 0, _c = Object.keys(ctx); _b < _c.length; _b++) {
-            var ctxEl = _c[_b];
-            if (ctx[ctxEl] instanceof types_1.ObjectType) {
-                for (var _d = 0, _e = ctx[ctxEl].properties; _d < _e.length; _d++) {
-                    var prop = _e[_d];
-                    if (prop.name === name)
-                        return prop;
-                }
-            }
-            else {
-                for (var _f = 0, _g = Object.keys(ctx[ctxEl]); _f < _g.length; _f++) {
-                    var key = _g[_f];
-                    if (ctx[ctxEl][key] instanceof types_1.ObjectType) {
-                        return findMethodByName(ctx[ctxEl][key], name);
-                    }
-                    if (key === name)
-                        return ctx[ctxEl][key];
-                }
+    for (var _i = 0, _a = Object.keys(ctx.ctxObj); _i < _a.length; _i++) {
+        var ctxEl = _a[_i];
+        if (ctx.ctxObj[ctxEl] instanceof types_1.ObjectType) {
+            for (var _b = 0, _c = ctx.ctxObj[ctxEl].properties; _b < _c.length; _b++) {
+                var prop = _c[_b];
+                if (prop.name === name)
+                    return prop;
             }
         }
     }
 }
 function _findVariable(ctx, name) {
-    if (ctx._args && ctx._args[name]) {
-        if (ctx._args[name]._ctx) {
-            return ctx._args[name][ctx._args[name]._ctx];
-        }
-        return ctx._args[name];
-    }
-    else {
-        if (ctx instanceof types_1.ObjectType) {
-            for (var _i = 0, _a = ctx.properties; _i < _a.length; _i++) {
-                var prop = _a[_i];
-                if (prop.name === name)
-                    return prop;
-            }
-        }
-        else {
-            for (var _b = 0, _c = Object.keys(ctx); _b < _c.length; _b++) {
-                var ctxEl = _c[_b];
-                if (ctxEl === name)
-                    return ctx[ctxEl];
-            }
-        }
+    for (var _i = 0, _a = Object.keys(ctx.ctxObj); _i < _a.length; _i++) {
+        var ctxEl = _a[_i];
+        if (ctxEl === name)
+            return ctx.ctxObj[ctxEl];
     }
 }
 function findVariable(ctx, name) {

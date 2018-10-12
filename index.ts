@@ -1,45 +1,19 @@
 import {Sigma, Expression, Field, FieldUpdate, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} from './types';
 import {sigma, sigma2, sigma3, sigma4, sigma5} from './objects';
 
-function findMethodByName(ctx, name) {
-    if (ctx instanceof ObjectType) {
-        for (const prop of ctx.properties) {
-            if (prop.name === name) return prop;
-        }
-    } else {
-        for (const ctxEl of Object.keys(ctx)) {
-            if (ctx[ctxEl] instanceof ObjectType) {
-                for (const prop of ctx[ctxEl].properties) {
-                    if (prop.name === name) return prop;
-                }
-            } else {
-                for (const key of Object.keys(ctx[ctxEl])) {
-                    if (ctx[ctxEl][key] instanceof ObjectType) {
-                        return findMethodByName(ctx[ctxEl][key], name);
-                    }
-                    if (key === name) return ctx[ctxEl][key];
-                }
+function findMethodByName(ctx: Context, name: string) {
+    for (const ctxEl of Object.keys(ctx.ctxObj)) {
+        if (ctx.ctxObj[ctxEl] instanceof ObjectType) {
+            for (const prop of ctx.ctxObj[ctxEl].properties) {
+                if (prop.name === name) return prop;
             }
         }
     }
 }
 
-function _findVariable(ctx, name) {
-    if (ctx._args && ctx._args[name]) {
-        if (ctx._args[name]._ctx) {
-            return ctx._args[name][ctx._args[name]._ctx];
-        }
-        return ctx._args[name];
-    } else {
-        if (ctx instanceof ObjectType) {
-            for (const prop of ctx.properties) {
-                if (prop.name === name) return prop;
-            }
-        } else {
-            for (const ctxEl of Object.keys(ctx)) {
-                if (ctxEl === name) return ctx[ctxEl];
-            }
-        }
+function _findVariable(ctx, name: string) {
+    for (const ctxEl of Object.keys(ctx.ctxObj)) {
+      if (ctxEl === name) return ctx.ctxObj[ctxEl];
     }
 }
 
@@ -56,7 +30,7 @@ function findIndex(ctx: ObjectType, name: string) {
     return -1;
 }
 
-function d(ctx: Context, body) {
+function d(ctx: Context, body: Parameter) {
     if (!body.methodCall) {
         if (body.ctx instanceof Int) return body.ctx;
         if (body.ctx instanceof Float) return body.ctx;
@@ -164,7 +138,7 @@ function addMethod(outer, ctx, name, newValue) {
     }
 }
 
-function evalExprBody(ctx, method, args?) {
+function evalExprBody(ctx: Context, method: Int|Float|string|FieldUpdate|MethodUpdate|MethodCall|Expression|Parameter, args?) {
     if (method instanceof Int) return method.value;
     if (method instanceof Float) return method.value;
     if (typeof method === 'string') return method;
@@ -287,7 +261,9 @@ function attribution(ctx,func) {
     return func;
 }
 
-function evalBodyParse(ctx: Context, method: any, args?) {
+type Func = () => any;
+
+function evalBodyParse(ctx: Context, method: Int|Float|ObjectType|string|Lambda|Expression|Function|Func, args?) {
     if (method instanceof Int) return method.value;
     if (method instanceof Float) return method.value;
     if (typeof method === 'string') return method;
@@ -340,7 +316,7 @@ function evalBodyParse(ctx: Context, method: any, args?) {
     }
 }
 
-function validateArgs(type, mtd) {
+function validateArgs(type: string[], mtd) {
     const innerArgs = [...mtd.args];
     // correlate each type arg with args array
     for (const t of type) {
