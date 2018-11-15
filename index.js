@@ -75,12 +75,11 @@ function b(body) {
 }
 
 function evalFunction(ctx, body) {
-    let operand;
     switch (body.operand.__proto__) {
-        case Add.prototype: operand = '+'; break;
+        case Add.prototype: return b(d(ctx, body.arg1)) + b(d(ctx, body.arg2));
         //...
     }
-    return eval(`${b(d(ctx, body.arg1))} ${operand} ${b(d(ctx, body.arg2))}`);
+    return undefined;
 }
 
 function a(ctx, method) {
