@@ -75,6 +75,10 @@ function Int(arg) {
     this.value = arg;
 }
 
+function Add() {
+    this.name = 'add';
+}
+
 function Float(arg) {
     this.value = arg;
 }
@@ -91,6 +95,7 @@ const lazy = function (creator) {
 };
 
 module.exports = {
+Add,
   Field,
   FieldUpdate,
   MethodCall,

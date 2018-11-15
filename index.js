@@ -1,5 +1,5 @@
-const {Sigma, Expression, Field, FieldUpdate, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} = require('./types');
-const {sigma, sigma2, sigma3, sigma4, sigma5} = require('./objects');
+const {Sigma, Add, Expression, Field, FieldUpdate, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} = require('./types');
+const {sigma, sigma2, sigma3, sigma4, sigma5, sigma6} = require('./objects');
 
 function findMethodByName(ctx, name) {
     if (ctx instanceof ObjectType) {
@@ -75,7 +75,12 @@ function b(body) {
 }
 
 function evalFunction(ctx, body) {
-    return eval(`${b(d(ctx, body.arg1))} ${body.operand} ${b(d(ctx, body.arg2))}`);
+    let operand;
+    switch (body.operand.__proto__) {
+        case Add.prototype: operand = '+'; break;
+        //...
+    }
+    return eval(`${b(d(ctx, body.arg1))} ${operand} ${b(d(ctx, body.arg2))}`);
 }
 
 function a(ctx, method) {
@@ -478,10 +483,13 @@ function evalExprArr(sigma) {
     return newContext;
 }
 
-function evalMain(sigma, i = 0, newContext) {
-    const call = sigma.calls[i];
-    const next = g(newContext || sigma.objectType, call);
-    if (i < sigma.calls.length - 1) return evalMain(sigma, i + 1, next);
+function evalMain(sigma) {
+    const call = sigma.calls;
+    let context;
+    if (sigma.objectType instanceof Sigma) {
+        context = evalMain(sigma.objectType);
+    }
+    const next = g(context || sigma.objectType, call);
     return next;
 }
 
@@ -490,8 +498,9 @@ function evalMain(sigma, i = 0, newContext) {
 // }
 
 
-console.log(evalMain(sigma));
-console.log(evalMain(sigma2));
-console.log(evalMain(sigma3));
-console.log(evalMain(sigma4));
-console.log(evalMain(sigma5));
+// console.log(evalMain(sigma));
+// console.log(evalMain(sigma2));
+// console.log(evalMain(sigma3));
+// console.log(evalMain(sigma4));
+// console.log(evalMain(sigma5));
+console.log(evalMain(sigma6));

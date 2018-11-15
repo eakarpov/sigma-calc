@@ -1,4 +1,4 @@
-const {Sigma, Expression, Field, FieldUpdate, LambdaArg, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} = require('./types');
+const {Sigma, Expression,Add, Field, FieldUpdate, LambdaArg, Float, Function, Int, Lambda, lazy, Method, MethodCall, MethodUpdate, ObjectType, Parameter, Type} = require('./types');
 
 const sigma = new Sigma(
     new ObjectType([
@@ -338,10 +338,49 @@ const sigma5 = new Sigma(new ObjectType([
 //     main: Int = @ top => (top.numeral.fib(top.numeral.zero.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ.succ)).val
 // ].main
 
+const sigma6 =
+    new Sigma(
+        new Sigma(
+            new Sigma(
+                new ObjectType([
+                    new Field('x', new Type('Int'), new Int(0)),
+                    new Method(
+                        'move',
+                        new Type('Int','Obj'),
+                        'this',
+                        new Lambda(
+                            [new LambdaArg('dx', new Type('Int'))],
+                            new Expression(
+                                null,
+                                [new FieldUpdate(
+                                    'this',
+                                    'x',
+                                    new Type('Int'),
+                                    new Expression(
+                                        null,
+                                        [new Function(
+                                            new Parameter('this', new MethodCall(null, 'x')),
+                                            new Add(),
+                                            new Parameter('dx')
+                                        )]
+                                    )
+                                )]
+                            ),
+                        )
+                    )
+                ]),
+                new MethodCall(null, 'move', [new Int(5)])
+            ),
+            new MethodCall(null, 'move', [new Int(-3)])
+        ),
+        new MethodCall(null, 'x')
+    );
+
 module.exports = {
     sigma,
     sigma2,
     sigma3,
     sigma4,
-    sigma5
+    sigma5,
+    sigma6,
 };
